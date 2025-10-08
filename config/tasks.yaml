@@ -1,0 +1,7 @@
+translate_task:
+  description: >
+    Translate {sentence} from English to Italian without losing the meaning.
+  expected_output: >
+    A well formatted translation from English to Italian using proper capitalization of names and places. 
+  agent: >
+    translator_agent

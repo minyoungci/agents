@@ -1,0 +1,128 @@
+content_harvesting_task:
+  description: >
+    Collect recent news articles based on {topic}.
+
+    Steps include:
+    1. Use the search tool to search for recent news articles about {topic}
+    2. From the search results, identify URLs from credible sources.
+    3. **IMPORTANT: Use the scrape_tool to extract actual content from each URL**
+    4. Filter out any URLs that fail to scrape or return no content
+    5. For successfully scraped articles, save both the URL and the full content
+
+  expected_output: >
+    A well-structured markdown document containing the collected news articles with this exact format:
+
+    # News Articles Collection: {topic}
+
+    **Collection Summary**
+    - Total articles found:
+    - Articles successfully scraped:
+    - Sources accessed:
+
+    ---
+
+    ## Article 1: [Article Headline]
+
+    **Source:**
+    **Date:**
+    **URL:**
+    **Category:**
+
+    **Full Content:**
+    [The actual scraped content from the URL goes here]
+
+    ---
+  agent: news_hunter_agent
+  markdown: true
+  output_file: output/content_harvest.md
+  create_directory: true
+
+summarization_task:
+  description: >
+    Read the content_harvest.md file from the previous task and generate summaries.
+
+    **IMPORTANT: Do NOT try to scrape URLs again. Use the content already collected in content_harvest.md**
+
+    For each article in content_harvest.md, create:
+    1. **Headline Summary** (≤280 characters)
+    2. **Executive Summary** (150–200 words)
+    3. **Comprehensive Summary** (300-500 words)
+
+  expected_output: >
+    A structured markdown document containing multi-tier summaries with this format:
+
+    # News Summaries: {topic}
+
+    **Summary Report Overview**
+    - Total articles processed:
+    - Summary generation date:
+
+    ---
+
+    ## Article 1: [Original Headline]
+
+    ### 📱 Headline Summary
+    [280-character summary here...]
+
+    ### 📋 Executive Summary
+    [150-200 word briefing here...]
+
+    ### 📖 Comprehensive Summary
+    [300-500 word detailed summary here...]
+
+    ---
+  agent: summarizer_agent
+  context:
+    - content_harvesting_task
+  markdown: true
+  output_file: output/summary.md
+  create_directory: true
+
+final_report_assembly_task:
+  description: >
+    Create the final publication-ready markdown news briefing by combining
+    content from content_harvest.md and summary.md into a professional report.
+
+    Assembly process:
+    1. Read both content_harvest.md and summary.md
+    2. Use summaries from summary.md for the main content
+    3. Include source links from content_harvest.md
+    4. Create professional opening and closing sections
+    5. Ensure consistent formatting throughout
+
+  expected_output: >
+    A complete, publication-ready markdown document with professional structure:
+
+    # Daily News Briefing: {topic}
+
+    **Date:**
+    **Generated:**
+    **Stories Covered:**
+
+    ## Executive Summary
+    [Opening paragraph capturing key developments]
+
+    ---
+
+    ## 🚨 Today's Lead Story
+    [Use comprehensive summary from summary.md]
+    **Source:** | **Read more:** [Link]
+
+    ---
+
+    ## 📈 Additional Developments
+    [Use executive summaries from summary.md]
+
+    ---
+
+    ## 🎯 Editor's Analysis
+    [Key themes and looking ahead section]
+
+    ---
+  agent: curator_agent
+  context:
+    - content_harvesting_task
+    - summarization_task
+  markdown: true
+  output_file: output/final_report.md
+  create_directory: true
